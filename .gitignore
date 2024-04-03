@@ -1,0 +1,9 @@
+# Gradle
+.gradle
+build/
+
+# IntelliJ IDEA
+.idea/
+
+# VS Code
+.run/
