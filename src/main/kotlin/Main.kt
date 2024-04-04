@@ -13,7 +13,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import garden.ephemeral.audio.components.AudioOut
 import garden.ephemeral.audio.components.PushButton
-import garden.ephemeral.audio.components.SineGenerator
+import garden.ephemeral.audio.components.Oscillator
 import garden.ephemeral.audio.model.AudioEnvironment
 
 fun main() = application {
@@ -26,7 +26,7 @@ fun main() = application {
                 ) {
                     AudioEnvironment {
                         PushButton()
-                        SineGenerator()
+                        Oscillator()
                         AudioOut()
 
                         // TODO: Remove eventually

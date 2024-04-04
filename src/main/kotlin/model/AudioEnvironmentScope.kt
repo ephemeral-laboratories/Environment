@@ -22,4 +22,13 @@ interface AudioEnvironmentScope : ColumnScope {
 
     @Composable
     fun <T> HardWire(output: State<T>?, input: MutableState<T>?)
+
+    /**
+     * Converts a MIDI note to its frequency in Hz.
+     *
+     * @return the frequency in Hz.
+     */
+    fun MidiNote.toFrequency() = with(environment.tuning) {
+        toPitch().toFrequency()
+    }
 }

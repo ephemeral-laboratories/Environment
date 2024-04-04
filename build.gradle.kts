@@ -27,6 +27,10 @@ dependencies {
     runtimeOnly(variantOf(libs.lwjgl) { classifier("natives-windows") })
     runtimeOnly(variantOf(libs.lwjgl.openal) { classifier("natives-windows") })
     runtimeOnly(libs.flogger.system.backend)
+
+    testImplementation(libs.kotest.runner.junit5)
+    testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotest.property)
 }
 
 compose.desktop {
@@ -39,4 +43,8 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }

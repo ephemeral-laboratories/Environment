@@ -7,7 +7,9 @@ package garden.ephemeral.audio.units
 value class Hz(val value: Float) {
     override fun toString() = "%,.1f Hz".format(value)
 
+    operator fun times(scalar: Int) = Hz(value * scalar)
     operator fun times(scalar: Float) = Hz(value * scalar)
+    operator fun div(scalar: Int) = Hz(value / scalar)
     operator fun div(scalar: Float) = Hz(value / scalar)
     operator fun div(frequency: Hz) = value / frequency.value
 }

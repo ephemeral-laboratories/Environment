@@ -10,6 +10,8 @@ import garden.ephemeral.audio.units.Hz
 
 class AudioEnvironment {
     val sampleRate: Hz = DEFAULT_SAMPLE_RATE
+    val tuning = Tuning.A440
+    val octaveFormat = OctaveFormat.INTERNAL
 
     internal val booleanInputs = mutableStateListOf<MutableState<Boolean>>()
     internal val booleanOutputs = mutableStateListOf<State<Boolean>>()

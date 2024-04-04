@@ -3,12 +3,16 @@ kotlin = "1.9.20"
 compose = "1.6.1"
 lwjgl = "3.3.3"
 flogger = "0.8"
+kotest = "5.8.1"
 
 [libraries]
 lwjgl = {module = "org.lwjgl:lwjgl", version.ref = "lwjgl"}
 lwjgl-openal = {module = "org.lwjgl:lwjgl-openal", version.ref = "lwjgl"}
 flogger = {module = "com.google.flogger:flogger", version.ref = "flogger"}
 flogger-system-backend = {module = "com.google.flogger:flogger-system-backend", version.ref = "flogger"}
+kotest-runner-junit5 = {module = "io.kotest:kotest-runner-junit5", version.ref = "kotest"}
+kotest-assertions-core = {module = "io.kotest:kotest-assertions-core", version.ref = "kotest"}
+kotest-property = {module = "io.kotest:kotest-property", version.ref = "kotest"}
 
 [plugins]
 kotlin-jvm = {id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin"}
