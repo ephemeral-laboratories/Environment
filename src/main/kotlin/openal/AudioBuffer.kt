@@ -1,6 +1,6 @@
 package garden.ephemeral.audio.openal
 
-import garden.ephemeral.audio.units.Hz
+import garden.ephemeral.audio.units.Hertz
 import org.lwjgl.openal.AL10.alBufferData
 import org.lwjgl.openal.AL10.alDeleteBuffers
 import org.lwjgl.openal.AL10.alGenBuffers
@@ -11,7 +11,7 @@ value class AudioBuffer internal constructor(internal val bufferName: Int) : Aut
         alDeleteBuffers(bufferName)
     }
 
-    fun bufferData(format: AudioFormat, samples: ShortArray, frequency: Hz) {
+    fun bufferData(format: AudioFormat, samples: ShortArray, frequency: Hertz) {
         alBufferData(bufferName, format.openALValue, samples, frequency.value.toInt())
     }
 

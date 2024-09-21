@@ -7,8 +7,8 @@ class PitchSpec : FreeSpec({
     "assembling and disassembling packed values" - {
         "assembling pitch value from note and octave" {
             Pitch.of(Note.C, Octave.Middle) shouldBe Pitch(0)
-            Pitch.of(Note.A, Octave(-1)) shouldBe Pitch(-3)
-            Pitch.of(Note.D, Octave(2)) shouldBe Pitch(26)
+            Pitch.of(Note.A, Octave.Down1) shouldBe Pitch(-3)
+            Pitch.of(Note.D, Octave.Up2) shouldBe Pitch(26)
         }
 
         "extracting values back out of packed value" {
@@ -18,20 +18,41 @@ class PitchSpec : FreeSpec({
 
             val pitch2 = Pitch(-3)
             pitch2.note shouldBe Note.A
-            pitch2.octave shouldBe Octave(-1)
+            pitch2.octave shouldBe Octave.Down1
 
             val pitch3 = Pitch(26)
             pitch3.note shouldBe Note.D
-            pitch3.octave shouldBe Octave(2)
+            pitch3.octave shouldBe Octave.Up2
         }
     }
 
     "going up and down octaves" - {
         "going up one octave" {
-            Pitch.of(Note.C, Octave.Middle).oneOctaveUp() shouldBe Pitch.of(Note.C, Octave(1))
+            Pitch.of(Note.C, Octave.Middle).oneOctaveUp() shouldBe Pitch.of(Note.C, Octave.Up1)
         }
         "going down one octave" {
-            Pitch.of(Note.C, Octave.Middle).oneOctaveDown() shouldBe Pitch.of(Note.C, Octave(-1))
+            Pitch.of(Note.C, Octave.Middle).oneOctaveDown() shouldBe Pitch.of(Note.C, Octave.Down1)
+        }
+    }
+
+    "going up and down semitones" - {
+        "going up zero semitones moves nowhere" {
+            Pitch.of(Note.D, Octave.Middle).semitonesUp(0) shouldBe Pitch.of(Note.D, Octave.Middle)
+        }
+        "going up a positive number of semitones moves upwards" {
+            Pitch.of(Note.D, Octave.Middle).semitonesUp(3) shouldBe Pitch.of(Note.F, Octave.Middle)
+        }
+        "going up a negative number of semitones moves downwards" {
+            Pitch.of(Note.D, Octave.Middle).semitonesUp(-3) shouldBe Pitch.of(Note.B, Octave.Down1)
+        }
+        "going down zero semitones moves nowhere" {
+            Pitch.of(Note.E, Octave.Middle).semitonesDown(0) shouldBe Pitch.of(Note.E, Octave.Middle)
+        }
+        "going down a positive number of semitones moves downwards" {
+            Pitch.of(Note.G, Octave.Middle).semitonesDown(5) shouldBe Pitch.of(Note.D, Octave.Middle)
+        }
+        "going down a negative number of semitones moves upwards" {
+            Pitch.of(Note.G, Octave.Middle).semitonesDown(-5) shouldBe Pitch.of(Note.C, Octave.Up1)
         }
     }
 
@@ -44,17 +65,17 @@ class PitchSpec : FreeSpec({
         }
 
         "A up to C goes an octave up" {
-            Pitch.of(Note.A, Octave.Middle).ascendTo(Note.C) shouldBe Pitch.of(Note.C, Octave(1))
+            Pitch.of(Note.A, Octave.Middle).ascendTo(Note.C) shouldBe Pitch.of(Note.C, Octave.Up1)
         }
         "C up to C goes an octave up" {
-            Pitch.of(Note.C, Octave.Middle).ascendTo(Note.C) shouldBe Pitch.of(Note.C, Octave(1))
+            Pitch.of(Note.C, Octave.Middle).ascendTo(Note.C) shouldBe Pitch.of(Note.C, Octave.Up1)
         }
 
         "C down to A goes an octave down" {
-            Pitch.of(Note.C, Octave.Middle).descendTo(Note.A) shouldBe Pitch.of(Note.A, Octave(-1))
+            Pitch.of(Note.C, Octave.Middle).descendTo(Note.A) shouldBe Pitch.of(Note.A, Octave.Down1)
         }
         "C down to C goes an octave down" {
-            Pitch.of(Note.C, Octave.Middle).descendTo(Note.C) shouldBe Pitch.of(Note.C, Octave(-1))
+            Pitch.of(Note.C, Octave.Middle).descendTo(Note.C) shouldBe Pitch.of(Note.C, Octave.Down1)
         }
     }
 

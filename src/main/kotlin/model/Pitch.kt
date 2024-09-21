@@ -7,36 +7,61 @@ import garden.ephemeral.audio.util.floorMod
  *
  * This uses American Standard Pitch Notation whereby middle C is in octave 4.
  *
- * @param packedValue the packed pitch value, which is the number of semitones plus or minus
- *        from middle C.
+ * @param packedValue the packed pitch value, which is the number of semitones above or below middle C.
  */
 @JvmInline
 value class Pitch(internal val packedValue: Int) {
     internal val semitonesFromAAboveMiddleC get() = this.packedValue - 9
 
+    /**
+     * The note within the octave.
+     */
     val note: Note
         get() {
-            return Note.semitonesFromC(packedValue.floorMod(Note.entries.size))
+            return Note.semitonesFromC(packedValue floorMod Note.entries.size)
         }
 
+    /**
+     * The octave.
+     */
     val octave: Octave
         get() {
-            return Octave(packedValue.floorDiv(Note.entries.size))
+            return Octave.of(packedValue.floorDiv(Note.entries.size))
         }
 
     /**
-     * Gets the note one octave up.
+     * Gets a pitch a number of semitones up from this pitch.
      *
-     * @return the note one octave up.
+     * @param semitones the number of semitones.
+     * @return the pitch that many semitones up.
      */
-    fun oneOctaveUp() = Pitch(packedValue + 12)
+    fun semitonesUp(semitones: Int): Pitch {
+        return Pitch(packedValue + semitones)
+    }
 
     /**
-     * Gets the note one octave down.
+     * Gets a pitch a number of semitones down from this pitch.
      *
-     * @return the note one octave down.
+     * @param semitones the number of semitones.
+     * @return the pitch that many semitones down.
      */
-    fun oneOctaveDown() = Pitch(packedValue - 12)
+    fun semitonesDown(semitones: Int): Pitch {
+        return Pitch(packedValue - semitones)
+    }
+
+    /**
+     * Gets the pitch one octave up.
+     *
+     * @return the pitch one octave up.
+     */
+    fun oneOctaveUp() = semitonesUp(12)
+
+    /**
+     * Gets the pitch one octave down.
+     *
+     * @return the pitch one octave down.
+     */
+    fun oneOctaveDown() = semitonesDown(12)
 
     /**
      * Gets a note within the next octave up.
@@ -70,6 +95,11 @@ value class Pitch(internal val packedValue: Int) {
         }
     }
 
+    /**
+     * Converts to a MIDI note value.
+     *
+     * @return the MIDI note value.
+     */
     fun toMidiNote() = MidiNote(packedValue + MidiNote.MIDDLE_C.midiValue - MIDDLE_C.packedValue)
 
     fun toString(octaveFormat: OctaveFormat) = "$note${octave.toString(octaveFormat)}"

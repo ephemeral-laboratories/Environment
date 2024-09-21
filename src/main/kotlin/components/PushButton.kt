@@ -9,13 +9,14 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
-import garden.ephemeral.audio.model.AudioEnvironmentScope
+import garden.ephemeral.audio.uimodel.AdvertiseOutputEffect
+import garden.ephemeral.audio.uimodel.AudioEnvironmentScope
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AudioEnvironmentScope.PushButton() = StandardComponent("Push button") {
     val isPressed = remember { mutableStateOf(false) }
-    AdvertiseBooleanOutputEffect(isPressed)
+    AdvertiseOutputEffect(isPressed)
 
     Button(
         onClick = {},

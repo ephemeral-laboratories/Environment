@@ -4,10 +4,10 @@ import io.kotest.matchers.Matcher
 import io.kotest.matchers.MatcherResult
 import io.kotest.matchers.floats.FloatToleranceMatcher
 
-val FloatToleranceMatcher.Hz get(): Matcher<Hz> = HzToleranceMatcher(this)
+val FloatToleranceMatcher.Hz get(): Matcher<Hertz> = HertzToleranceMatcher(this)
 
-class HzToleranceMatcher(private val delegate: FloatToleranceMatcher) : Matcher<Hz> {
-    override fun test(value: Hz): MatcherResult {
+class HertzToleranceMatcher(private val delegate: FloatToleranceMatcher) : Matcher<Hertz> {
+    override fun test(value: Hertz): MatcherResult {
         return delegate.test(value.value)
     }
 }

@@ -21,6 +21,8 @@ import org.lwjgl.openal.AL10.AL_VELOCITY
 
 enum class IntSourceProperty(internal val openALValue: Int) {
     SOURCE_RELATIVE(AL_SOURCE_RELATIVE),
+    CONE_INNER_ANGLE(AL_CONE_INNER_ANGLE),
+    CONE_OUTER_ANGLE(AL_CONE_OUTER_ANGLE),
     BUFFER(AL_BUFFER),
     SOURCE_STATE(AL_SOURCE_STATE),
     BUFFERS_QUEUED(AL_BUFFERS_QUEUED),
@@ -38,6 +40,9 @@ enum class FloatSourceProperty(internal val openALValue: Int) {
     CONE_INNER_ANGLE(AL_CONE_INNER_ANGLE),
     CONE_OUTER_ANGLE(AL_CONE_OUTER_ANGLE),
     REFERENCE_DISTANCE(AL_REFERENCE_DISTANCE),
+    ;
+
+
 }
 
 enum class VectorSourceProperty(internal val openALValue: Int) {

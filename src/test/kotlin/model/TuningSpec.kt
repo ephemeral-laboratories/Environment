@@ -26,9 +26,9 @@ class TuningSpec : FreeSpec({
                 row(Note.A_SHARP, 233.08f, 466.16f, 932.33f),
                 row(Note.B, 246.94f, 493.88f, 987.77f),
             ) { (note, expectedFrequency1, expectedFrequency2, expectedFrequency3) ->
-                Pitch.of(note, Octave(-1)).toFrequency() shouldBe (expectedFrequency1 plusOrMinus epsilon).Hz
-                Pitch.of(note, Octave(0)).toFrequency() shouldBe (expectedFrequency2 plusOrMinus epsilon).Hz
-                Pitch.of(note, Octave(1)).toFrequency() shouldBe (expectedFrequency3 plusOrMinus epsilon).Hz
+                Pitch.of(note, Octave.Down1).toFrequency() shouldBe (expectedFrequency1 plusOrMinus epsilon).Hz
+                Pitch.of(note, Octave.Middle).toFrequency() shouldBe (expectedFrequency2 plusOrMinus epsilon).Hz
+                Pitch.of(note, Octave.Up1).toFrequency() shouldBe (expectedFrequency3 plusOrMinus epsilon).Hz
             }
         }
     }

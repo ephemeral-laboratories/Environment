@@ -5,23 +5,22 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
-import garden.ephemeral.audio.model.AudioEnvironmentScope
 import garden.ephemeral.audio.model.AudioPlayer
 import garden.ephemeral.audio.model.NO_BUFFER_SUPPLIER
 import garden.ephemeral.audio.openal.AudioFormat
+import garden.ephemeral.audio.uimodel.AdvertiseInputEffect
+import garden.ephemeral.audio.uimodel.AudioEnvironmentScope
+import garden.ephemeral.audio.units.dB
 
 @Composable
 fun AudioEnvironmentScope.AudioOut() = StandardComponent("Audio Out") {
-    // TODO: Volume is not wired up
-    var volume by remember { mutableStateOf(50.0f) }
+    val volume = remember { mutableStateOf((-24).dB) }
 
     val bufferSupplier = remember { mutableStateOf(NO_BUFFER_SUPPLIER) }
-    AdvertiseBufferInputEffect(bufferSupplier)
+    AdvertiseInputEffect(bufferSupplier)
 
     val player = remember {
         // TODO: Audio format should be selectable
@@ -30,6 +29,10 @@ fun AudioEnvironmentScope.AudioOut() = StandardComponent("Audio Out") {
             format = AudioFormat.MONO16,
             sampleRate = environment.sampleRate
         )
+    }
+
+    LaunchedEffect(volume.value) {
+        player.volume = volume.value
     }
 
     DisposableEffect(Unit) {
@@ -45,6 +48,11 @@ fun AudioEnvironmentScope.AudioOut() = StandardComponent("Audio Out") {
     }
 
     Card {
-        Text(text = "TODO How to get controls like volume")
+        Text(text = "Volume = ${volume.value}")
+        DecibelSlider(
+            value = volume.value,
+            onValueChange = { value -> volume.value = value },
+            valueRange = player.volumeRange,
+        )
     }
 }

@@ -7,8 +7,9 @@ import garden.ephemeral.audio.openal.AudioDevice
 import garden.ephemeral.audio.openal.AudioFormat
 import garden.ephemeral.audio.openal.AudioSource
 import garden.ephemeral.audio.openal.AudioSourceState
-import garden.ephemeral.audio.openal.IntSourceProperty
-import garden.ephemeral.audio.units.Hz
+import garden.ephemeral.audio.units.Decibel
+import garden.ephemeral.audio.units.Hertz
+import garden.ephemeral.audio.units.dB
 import garden.ephemeral.audio.util.initializingResources
 import java.util.Queue
 import java.util.concurrent.ConcurrentLinkedDeque
@@ -21,12 +22,24 @@ import java.util.concurrent.ConcurrentLinkedDeque
  * @property format the audio format to use.
  * @property sampleRate the sample rate in Hertz.
  */
-class AudioPlayer(bufferSupplier: BufferSupplier, val format: AudioFormat, val sampleRate: Hz) : AutoCloseable {
+class AudioPlayer(bufferSupplier: BufferSupplier, val format: AudioFormat, val sampleRate: Hertz) : AutoCloseable {
     private sealed class AudioPlayerMessage {
+        data object UpdateVolume : AudioPlayerMessage()
         data object UpdateBufferSupplier : AudioPlayerMessage()
         data object Shutdown : AudioPlayerMessage()
     }
+
     private val messageQueue: Queue<AudioPlayerMessage> = ConcurrentLinkedDeque()
+
+    @Volatile
+    var volume: Decibel = (-60).dB
+        set(value) {
+            field = value
+            logger.atFine().log("Posting message: %s", AudioPlayerMessage.UpdateVolume)
+            messageQueue.offer(AudioPlayerMessage.UpdateVolume)
+        }
+
+    val volumeRange: ClosedRange<Decibel> = (-60).dB..0.dB
 
     @Volatile
     var bufferSupplier: BufferSupplier = bufferSupplier
@@ -41,6 +54,7 @@ class AudioPlayer(bufferSupplier: BufferSupplier, val format: AudioFormat, val s
     private inner class Runner : Runnable {
         private val lockObject = Object()
 
+        private var volume = this@AudioPlayer.volume
         private var bufferSupplier = this@AudioPlayer.bufferSupplier
         private var isClosed = false
         private var isRunning = false
@@ -59,10 +73,13 @@ class AudioPlayer(bufferSupplier: BufferSupplier, val format: AudioFormat, val s
                     val message = messageQueue.poll() ?: break
                     logger.atFine().log("Processing message: $message")
                     when (message) {
+                        AudioPlayerMessage.UpdateVolume -> volume = this@AudioPlayer.volume
+
                         AudioPlayerMessage.UpdateBufferSupplier -> {
                             bufferSupplier = this@AudioPlayer.bufferSupplier
                             triggerPlayback()
                         }
+
                         AudioPlayerMessage.Shutdown -> {
                             isClosed = true
                             triggerPlayback()
@@ -132,11 +149,13 @@ class AudioPlayer(bufferSupplier: BufferSupplier, val format: AudioFormat, val s
                             break
                         }
 
-                        val buffersProcessed = source.getIntProperty(IntSourceProperty.BUFFERS_PROCESSED)
+                        source.gain = volume.toGain()
+
+                        val buffersProcessed = source.buffersProcessed
                         logger.atFine().log("Buffers processed: $buffersProcessed")
                         for (i in 0 until buffersProcessed) {
                             logger.atFine().log("Getting buffer to play, from $bufferSupplier")
-                            val samples = bufferSupplier(BUFFER_SIZE)
+                            val samples = bufferSupplier.supply(BUFFER_SIZE)
                             if (samples == null) {
                                 isRunning = false
                                 break
@@ -147,7 +166,7 @@ class AudioPlayer(bufferSupplier: BufferSupplier, val format: AudioFormat, val s
                             logger.atFine().log("Buffering samples")
                             bufferSamples(samples)
                         }
-                        val sourceState = source.getState()
+                        val sourceState = source.sourceState
                         logger.atFine().log("Source state was $sourceState")
                         if (sourceState != AudioSourceState.PLAYING) {
                             logger.atFine().log("Playing source")
@@ -187,6 +206,7 @@ class AudioPlayer(bufferSupplier: BufferSupplier, val format: AudioFormat, val s
         // TODO: What is a good buffer size? The video I saw said 512, but I see 1024 and 2048 stated more commonly. Should it be configurable? Why?
         internal const val BUFFER_SIZE = 2048
         private const val BUFFER_COUNT = 16
+
         // TODO: What is a good period?
         private const val MESSAGE_QUEUE_POLL_PERIOD_MILLIS = 100L
 

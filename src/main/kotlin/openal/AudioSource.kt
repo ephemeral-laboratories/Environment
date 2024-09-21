@@ -14,11 +14,71 @@ import org.lwjgl.openal.AL10.alSourceStop
  */
 @JvmInline
 value class AudioSource private constructor(private val source: Int) : AutoCloseable {
+
+    var sourceRelative: Int
+        get() = getIntProperty(IntSourceProperty.SOURCE_RELATIVE)
+        set(value) = setIntProperty(IntSourceProperty.SOURCE_RELATIVE, value)
+
+    var buffer: Int
+        get() = getIntProperty(IntSourceProperty.BUFFER)
+        set(value) = setIntProperty(IntSourceProperty.BUFFER, value)
+
+    var sourceState: AudioSourceState
+        get() = getIntProperty(IntSourceProperty.SOURCE_STATE).toAudioSourceState()
+        set(value) = setIntProperty(IntSourceProperty.SOURCE_STATE, value.openALValue)
+
+    var buffersQueued: Int
+        get() = getIntProperty(IntSourceProperty.BUFFERS_QUEUED)
+        set(value) = setIntProperty(IntSourceProperty.BUFFERS_QUEUED, value)
+
+    var buffersProcessed: Int
+        get() = getIntProperty(IntSourceProperty.BUFFERS_PROCESSED)
+        set(value) = setIntProperty(IntSourceProperty.BUFFERS_PROCESSED, value)
+
+    var pitch: Float
+        get() = getFloatProperty(FloatSourceProperty.PITCH)
+        set(value) = setFloatProperty(FloatSourceProperty.PITCH, value)
+
+    var gain: Float
+        get() = getFloatProperty(FloatSourceProperty.GAIN)
+        set(value) = setFloatProperty(FloatSourceProperty.GAIN, value)
+
+    var minGain: Float
+        get() = getFloatProperty(FloatSourceProperty.MIN_GAIN)
+        set(value) = setFloatProperty(FloatSourceProperty.MIN_GAIN, value)
+
+    var maxGain: Float
+        get() = getFloatProperty(FloatSourceProperty.MAX_GAIN)
+        set(value) = setFloatProperty(FloatSourceProperty.MAX_GAIN, value)
+
+    var maxDistance: Float
+        get() = getFloatProperty(FloatSourceProperty.MAX_DISTANCE)
+        set(value) = setFloatProperty(FloatSourceProperty.MAX_DISTANCE, value)
+
+    var rolloffFactor: Float
+        get() = getFloatProperty(FloatSourceProperty.ROLLOFF_FACTOR)
+        set(value) = setFloatProperty(FloatSourceProperty.ROLLOFF_FACTOR, value)
+
+    var coneOuterGain: Float
+        get() = getFloatProperty(FloatSourceProperty.CONE_OUTER_GAIN)
+        set(value) = setFloatProperty(FloatSourceProperty.CONE_OUTER_GAIN, value)
+
+    var coneInnerAngle: Float
+        get() = getFloatProperty(FloatSourceProperty.CONE_INNER_ANGLE)
+        set(value) = setFloatProperty(FloatSourceProperty.CONE_INNER_ANGLE, value)
+
+    var coneOuterAngle: Float
+        get() = getFloatProperty(FloatSourceProperty.CONE_OUTER_ANGLE)
+        set(value) = setFloatProperty(FloatSourceProperty.CONE_OUTER_ANGLE, value)
+
+    var referenceDistance: Float
+        get() = getFloatProperty(FloatSourceProperty.REFERENCE_DISTANCE)
+        set(value) = setFloatProperty(FloatSourceProperty.REFERENCE_DISTANCE, value)
+
+
     override fun close() {
         alDeleteSources(source)
     }
-
-    fun getState() = getIntProperty(IntSourceProperty.SOURCE_STATE).toAudioSourceState()
 
     fun play() {
         alSourcePlay(source)
@@ -60,6 +120,10 @@ value class AudioSource private constructor(private val source: Int) : AutoClose
         val values = FloatArray(3)
         AL10.alGetSourcefv(source, property.openALValue, values)
         return values.asList()
+    }
+
+    fun setFloatProperty(property: FloatSourceProperty, value: Float) {
+        AL10.alSourcef(source, property.openALValue, value)
     }
 
     companion object {

@@ -2,7 +2,8 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.compose)
+    alias(libs.plugins.compose.plugin)
+    alias(libs.plugins.compose.compiler)
 }
 group = "garden.ephemeral"
 version = "1.0-SNAPSHOT"
@@ -30,6 +31,7 @@ dependencies {
 
     testImplementation(libs.kotest.runner.junit5)
     testImplementation(libs.kotest.assertions.core)
+    testImplementation(libs.kotest.assertions.core.jvm)
     testImplementation(libs.kotest.framework.datatest)
     testImplementation(libs.kotest.property)
 }
