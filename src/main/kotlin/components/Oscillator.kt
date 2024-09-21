@@ -3,20 +3,18 @@ package garden.ephemeral.audio.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.RadioButton
-import androidx.compose.material.Slider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import garden.ephemeral.audio.uimodel.AdvertiseInputEffect
-import garden.ephemeral.audio.uimodel.AdvertiseOutputEffect
-import garden.ephemeral.audio.uimodel.AudioEnvironmentScope
 import garden.ephemeral.audio.model.BufferSupplier
 import garden.ephemeral.audio.model.NO_BUFFER_SUPPLIER
 import garden.ephemeral.audio.model.Pitch
-import garden.ephemeral.audio.units.Hz
+import garden.ephemeral.audio.uimodel.AdvertiseInputEffect
+import garden.ephemeral.audio.uimodel.AdvertiseOutputEffect
+import garden.ephemeral.audio.uimodel.AudioEnvironmentScope
 import garden.ephemeral.audio.util.TAU
 import garden.ephemeral.audio.util.floorMod
 import garden.ephemeral.audio.util.scaleToShort
@@ -36,12 +34,14 @@ private enum class Waveform(val localizedName: String) {
 fun AudioEnvironmentScope.Oscillator() {
     StandardComponent(name = "Oscillator") {
         val shouldGenerate = remember { mutableStateOf(false) }
+        AdvertiseInputEffect(shouldGenerate)
 
         val waveform = remember { mutableStateOf(Waveform.Sine) }
 
         val frequency = remember {
             mutableStateOf(with(environment.tuning) { Pitch.A_ABOVE_MIDDLE_C.toFrequency() })
         }
+        AdvertiseInputEffect(frequency)
 
         val waveformBufferSupplier = object : BufferSupplier {
             private var wavePos = 0
@@ -64,6 +64,7 @@ fun AudioEnvironmentScope.Oscillator() {
             }
         }
         val bufferSupplier = derivedStateOf { if (shouldGenerate.value) waveformBufferSupplier else NO_BUFFER_SUPPLIER }
+        AdvertiseOutputEffect(bufferSupplier)
 
         Column {
             Row {
@@ -79,12 +80,6 @@ fun AudioEnvironmentScope.Oscillator() {
 
             val frequencyValue = frequency.value
             Text("Frequency = $frequencyValue")
-            Slider(value = frequencyValue.value, onValueChange = { frequency.value = it.Hz }, valueRange = 1.0f..800.0f)
-
-
         }
-
-        AdvertiseInputEffect(shouldGenerate)
-        AdvertiseOutputEffect(bufferSupplier)
     }
 }

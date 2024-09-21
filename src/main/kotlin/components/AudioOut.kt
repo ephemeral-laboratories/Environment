@@ -1,6 +1,6 @@
 package garden.ephemeral.audio.components
 
-import androidx.compose.material.Card
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -47,7 +47,7 @@ fun AudioEnvironmentScope.AudioOut() = StandardComponent("Audio Out") {
         player.bufferSupplier = currentBufferSupplier.value
     }
 
-    Card {
+    Column {
         Text(text = "Volume = ${volume.value}")
         DecibelSlider(
             value = volume.value,
