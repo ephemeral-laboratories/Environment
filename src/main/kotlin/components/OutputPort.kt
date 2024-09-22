@@ -3,9 +3,12 @@ package garden.ephemeral.audio.components
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
+import garden.ephemeral.audio.uimodel.LocalPortColors
 import garden.ephemeral.audio.uimodel.LocalPortRegistry
 import garden.ephemeral.audio.uimodel.PortColors
 import garden.ephemeral.audio.uimodel.PortRegistry
@@ -24,8 +27,7 @@ import java.util.UUID
 @Composable
 inline fun <reified T : Any> OutputPort(
     valueState: State<T>,
-    isConnected: Boolean,
-    portColors: PortColors,
+    portColors: PortColors = LocalPortColors.current,
     modifier: Modifier = Modifier,
 ) {
     val portId = remember { UUID.randomUUID() }
@@ -38,13 +40,15 @@ inline fun <reified T : Any> OutputPort(
         }
     }
 
+    val isConnected by rememberUpdatedState(portRegistry.isPortConnected(portId))
+
     ConnectionPoint(
         valueType = T::class,
         isConnected = isConnected,
         portColors = portColors,
-        modifier = modifier.onGloballyPositioned { coordinates ->
-            // TODO: Is this where we should register to get the location?
-            // coords.transformFrom(...)
-        },
+        modifier = modifier
+            .onGloballyPositioned { location ->
+                portRegistry.updatePortLocation(portId, location)
+            },
     )
 }

@@ -12,8 +12,6 @@ import androidx.compose.ui.Alignment
 import garden.ephemeral.audio.model.BufferSupplier
 import garden.ephemeral.audio.model.NO_BUFFER_SUPPLIER
 import garden.ephemeral.audio.model.Pitch
-import garden.ephemeral.audio.uimodel.AdvertiseInputEffect
-import garden.ephemeral.audio.uimodel.AdvertiseOutputEffect
 import garden.ephemeral.audio.uimodel.AudioEnvironmentScope
 import garden.ephemeral.audio.util.TAU
 import garden.ephemeral.audio.util.floorMod
@@ -34,14 +32,12 @@ private enum class Waveform(val localizedName: String) {
 fun AudioEnvironmentScope.Oscillator() {
     StandardComponent(name = "Oscillator") {
         val shouldGenerate = remember { mutableStateOf(false) }
-        AdvertiseInputEffect(shouldGenerate)
 
         val waveform = remember { mutableStateOf(Waveform.Sine) }
 
         val frequency = remember {
             mutableStateOf(with(environment.tuning) { Pitch.A_ABOVE_MIDDLE_C.toFrequency() })
         }
-        AdvertiseInputEffect(frequency)
 
         val waveformBufferSupplier = object : BufferSupplier {
             private var wavePos = 0
@@ -64,22 +60,26 @@ fun AudioEnvironmentScope.Oscillator() {
             }
         }
         val bufferSupplier = derivedStateOf { if (shouldGenerate.value) waveformBufferSupplier else NO_BUFFER_SUPPLIER }
-        AdvertiseOutputEffect(bufferSupplier)
 
         Column {
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Waveform.entries.forEach { option ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        RadioButton(selected = waveform.value == option, onClick = { waveform.value = option })
-                        Text(text = option.localizedName)
-                    }
+                    RadioButton(selected = waveform.value == option, onClick = { waveform.value = option })
+                    Text(text = option.localizedName)
                 }
             }
-
-            val frequencyValue = frequency.value
-            Text("Frequency = $frequencyValue")
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                InputPort(shouldGenerate)
+                Text("Active")
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                InputPort(frequency)
+                Text("Frequency = ${frequency.value}")
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Resulting Waveform")
+                OutputPort(bufferSupplier)
+            }
         }
     }
 }

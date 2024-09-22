@@ -11,8 +11,13 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 
-val ConnectionPointRadius = 12.dp
+val ConnectionPointSize = 48.dp
+val ConnectionPointCenter = ConnectionPointSize / 2
+val ConnectionPointInnerRadius = 8.dp
+val ConnectionPointOuterRadius = 12.dp
 val ConnectionPointStrokeWidth = 2.dp
+val CableWidth = 12.dp
+val CableAlpha = 0.5f
 
 @Composable
 fun ConnectionPointVisual(
@@ -20,11 +25,16 @@ fun ConnectionPointVisual(
     color: Color,
     modifier: Modifier = Modifier,
 ) {
-    Canvas(modifier = modifier.size(48.dp)) {
+    Canvas(modifier = modifier.size(ConnectionPointSize)) {
         drawCircle(
             color = color,
-            radius = ConnectionPointRadius.toPx(),
+            radius = ConnectionPointInnerRadius.toPx(),
             style = if (isConnected) Fill else Stroke(width = ConnectionPointStrokeWidth.toPx()),
+        )
+        drawCircle(
+            color = color,
+            radius = ConnectionPointOuterRadius.toPx(),
+            style = Stroke(width = ConnectionPointStrokeWidth.toPx()),
         )
     }
 }

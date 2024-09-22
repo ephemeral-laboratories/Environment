@@ -21,10 +21,14 @@ value class Decibel(val value: Float) : Comparable<Decibel> {
      * @return the gain value, dimensionless.
      */
     fun toGain(scaling: Scaling = Scaling.Voltage): Float {
-        // Special case for reasons that aren't immediately apparent, but Wolfram agrees.
-        if (value <= -60) return 0.0f
+        val result = 10.0f.pow(value / scaling.divisor)
 
-        return 10.0f.pow(value / scaling.divisor)
+        // Special case for reasons that aren't immediately apparent, but Wolfram agrees.
+        if (result <= 1.0E-6f) {
+            return 0.0f
+        }
+
+        return result
     }
 
     /**
@@ -47,4 +51,5 @@ value class Decibel(val value: Float) : Comparable<Decibel> {
 }
 
 val Int.dB get() = toFloat().dB
+val Double.dB get() = toFloat().dB
 val Float.dB get() = Decibel(this)
